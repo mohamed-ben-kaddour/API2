@@ -15,7 +15,7 @@ supabase: Client = create_client(url, key)
 @app.route('/download_excel')
 def download_excel():
     # Query data from Supabase (replace with your actual table and query)
-    response = supabase.table("your_table_name").select("*").execute()
+    response = supabase.table("activity").select("*").execute()
 
     # Ensure you access the .data field to get the query result
     data = response.data  # This gives you the actual data from the query
