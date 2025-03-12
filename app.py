@@ -16,7 +16,7 @@ supabase: Client = create_client(url, key)
 def download_excel():
     """Fetch monthly attendance data from Supabase stored procedure and return as an Excel file."""
     # Call the stored procedure
-    response = supabase.rpc('get_monthly_attendance', {}).execute()
+    response = supabase.rpc('get_monthly_attendance', {})
 
     # Ensure you access the .data field to get the query result
     data = response.data
