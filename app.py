@@ -14,11 +14,12 @@ supabase: Client = create_client(url, key)
 
 @app.route('/download_excel')
 def download_excel():
-    # Query data from Supabase (replace with your actual table and query)
-    response = supabase.table("activity").select("*").execute()
+    """Fetch monthly attendance data from Supabase stored procedure and return as an Excel file."""
+    # Call the stored procedure
+    response = supabase.rpc('get_monthly_attendance').execute()
 
     # Ensure you access the .data field to get the query result
-    data = response.data  # This gives you the actual data from the query
+    data = response.data
 
     if not data:
         return "No data found", 404  # Handle case where no data is returned
@@ -26,14 +27,15 @@ def download_excel():
     # Create an in-memory Excel file using openpyxl
     wb = openpyxl.Workbook()
     ws = wb.active
+    ws.title = "Monthly Attendance"
 
-    # Add column headers (assuming data is a list of dictionaries)
-    headers = data[0].keys()  # Get the column names from the first row
-    ws.append(list(headers))
+    # Add column headers
+    headers = ["Activity Name", "Activity ID", "Month", "Gender", "Total Attendance"]
+    ws.append(headers)
 
     # Add data rows
     for row in data:
-        ws.append(list(row.values()))
+        ws.append([row["activity_name"], row["activity_id"], row["year_month"], row["sexe"], row["total_attendance"]])
 
     # Save to an in-memory file
     excel_file = io.BytesIO()
@@ -41,7 +43,12 @@ def download_excel():
     excel_file.seek(0)
 
     # Send the file as a response
-    return send_file(excel_file, as_attachment=True, download_name='data.xlsx', mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    return send_file(
+        excel_file,
+        as_attachment=True,
+        download_name='attendance_data.xlsx',
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
 
 if __name__ == "__main__":
     # Use the port from the environment variable
