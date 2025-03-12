@@ -38,4 +38,6 @@ def download_excel():
     return send_file(excel_file, as_attachment=True, download_name='data.xlsx', mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # Use the port from the environment variable
+    port = int(os.getenv("PORT", 5000))  # Default to 5000 if no PORT is provided
+    app.run(host="0.0.0.0", port=port, debug=True)
