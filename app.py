@@ -2,19 +2,20 @@ from flask import Flask, send_file
 import pandas as pd
 import io
 from supabase import create_client, Client
+import os
 
 # Initialize Flask app
 app = Flask(__name__)
 
-# Initialize Supabase client
-url = "YOUR_SUPABASE_URL"  # Replace with your Supabase URL
-key = "YOUR_SUPABASE_KEY"  # Replace with your Supabase API Key
+# Initialize Supabase client using environment variables
+url = os.getenv("SUPABASE_URL")  # Supabase URL from environment variable
+key = os.getenv("SUPABASE_KEY")  # Supabase API key from environment variable
 supabase: Client = create_client(url, key)
 
 @app.route('/download_excel')
 def download_excel():
-    # Query data from Supabase (replace with your actual query)
-    data = supabase.table("your_table_name").select("*").execute()
+    # Query data from Supabase (replace with your actual table and query)
+    data = supabase.table("activity").select("*").execute()
 
     # Convert to a pandas DataFrame
     df = pd.DataFrame(data['data'])  # Extract the 'data' from the response
