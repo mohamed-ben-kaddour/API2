@@ -1,4 +1,5 @@
 Flask==2.1.1
-openpyxl==3.0.9  # Lightweight library to work with Excel files
+openpyxl==3.0.9
 supabase==0.4.0
-Werkzeug==2.0.3  # Ensure compatibility with Flask 2.x
+Werkzeug==2.0.3
+gunicorn==20.1.0  # Add this line for Gunicorn
