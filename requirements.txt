@@ -1,4 +1,4 @@
 Flask==2.1.1
-pandas==1.4.2
+pandas==1.4.2 --prefer-binary
 openpyxl==3.0.9
-supabase==0.4.0  # Add this if you’re connecting to Supabase
+supabase==0.4.0
