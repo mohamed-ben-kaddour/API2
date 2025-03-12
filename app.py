@@ -15,18 +15,24 @@ supabase: Client = create_client(url, key)
 @app.route('/download_excel')
 def download_excel():
     # Query data from Supabase (replace with your actual table and query)
-    data = supabase.table("activity").select("*").execute()
+    response = supabase.table("your_table_name").select("*").execute()
+
+    # Ensure you access the .data field to get the query result
+    data = response.data  # This gives you the actual data from the query
+
+    if not data:
+        return "No data found", 404  # Handle case where no data is returned
 
     # Create an in-memory Excel file using openpyxl
     wb = openpyxl.Workbook()
     ws = wb.active
 
     # Add column headers (assuming data is a list of dictionaries)
-    headers = data['data'][0].keys()  # Get the column names from the first row
+    headers = data[0].keys()  # Get the column names from the first row
     ws.append(list(headers))
 
     # Add data rows
-    for row in data['data']:
+    for row in data:
         ws.append(list(row.values()))
 
     # Save to an in-memory file
