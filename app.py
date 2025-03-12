@@ -15,11 +15,11 @@ supabase: Client = create_client(url, key)
 @app.route('/download_excel')
 def download_excel():
     """Fetch monthly attendance data from Supabase stored procedure and return as an Excel file."""
-    # Call the stored procedure
+    # Call the stored procedure with an empty params dictionary
     response = supabase.rpc('get_monthly_attendance', {})
 
-    # Ensure you access the .data field to get the query result
-    data = response.data
+    # Extract data properly
+    data = response.get("data", None)
 
     if not data:
         return "No data found", 404  # Handle case where no data is returned
@@ -51,6 +51,5 @@ def download_excel():
     )
 
 if __name__ == "__main__":
-    # Use the port from the environment variable
     port = int(os.getenv("PORT", 5000))  # Default to 5000 if no PORT is provided
     app.run(host="0.0.0.0", port=port, debug=True)
