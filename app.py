@@ -1,5 +1,5 @@
 from flask import Flask, send_file
-import pandas as pd
+import openpyxl
 import io
 from supabase import create_client, Client
 import os
@@ -8,8 +8,8 @@ import os
 app = Flask(__name__)
 
 # Initialize Supabase client using environment variables
-url = os.getenv("SUPABASE_URL")  # Supabase URL from environment variable
-key = os.getenv("SUPABASE_KEY")  # Supabase API key from environment variable
+url = os.getenv("SUPABASE_URL")
+key = os.getenv("SUPABASE_KEY")
 supabase: Client = create_client(url, key)
 
 @app.route('/download_excel')
@@ -17,14 +17,23 @@ def download_excel():
     # Query data from Supabase (replace with your actual table and query)
     data = supabase.table("activity").select("*").execute()
 
-    # Convert to a pandas DataFrame
-    df = pd.DataFrame(data['data'])  # Extract the 'data' from the response
+    # Create an in-memory Excel file using openpyxl
+    wb = openpyxl.Workbook()
+    ws = wb.active
 
-    # Create an in-memory Excel file
+    # Add column headers (assuming data is a list of dictionaries)
+    headers = data['data'][0].keys()  # Get the column names from the first row
+    ws.append(list(headers))
+
+    # Add data rows
+    for row in data['data']:
+        ws.append(list(row.values()))
+
+    # Save to an in-memory file
     excel_file = io.BytesIO()
-    df.to_excel(excel_file, index=False, engine='openpyxl')
+    wb.save(excel_file)
     excel_file.seek(0)
-    
+
     # Send the file as a response
     return send_file(excel_file, as_attachment=True, download_name='data.xlsx', mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
 
