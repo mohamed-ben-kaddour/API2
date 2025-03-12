@@ -1,4 +1,4 @@
 Flask==2.1.1
-pandas==1.4.2
-openpyxl==3.0.9
-supabase==0.4.0  # Add this if you’re connecting to Supabase
+openpyxl==3.0.9  # Lightweight library to work with Excel files
+supabase==0.4.0
+Werkzeug==2.0.3  # Ensure compatibility with Flask 2.x
