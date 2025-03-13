@@ -16,9 +16,16 @@ supabase: Client = create_client(url, key)
 def download_excel():
     try:
         # Call the stored procedure using RPC
-
-
-        data = supabase.rpc("get_monthly_attendance_counts", params={})
+        response = supabase.rpc("get_monthly_attendance_counts", params={})
+        print("Current method response:")
+        if response.data:
+            for row in response.data:
+                print(row)
+        else:
+            print("No data returned.")
+        
+        # Use the data from the response
+        data = response.data
 
         # Create an in-memory Excel file using openpyxl
         wb = openpyxl.Workbook()
@@ -26,17 +33,16 @@ def download_excel():
         ws.title = "Monthly Attendance"
 
         # Add column headers
-        headers = ["Activity Name", "Activity ID", "Month", "Gender", "Total Attendance"]
+        headers = ["Activity ID", "Month", "Male Count", "Female Count"]
         ws.append(headers)
 
         # Add data rows
         for row in data:
             ws.append([
-                row.get("activity_name", "N/A"),
                 row.get("activity_id", "N/A"),
-                row.get("year_month", "N/A"),
-                row.get("sexe", "N/A"),
-                row.get("total_attendance", "N/A")
+                row.get("month", "N/A"),
+                row.get("male_count", "N/A"),
+                row.get("female_count", "N/A")
             ])
 
         # Save to an in-memory file
@@ -53,6 +59,20 @@ def download_excel():
         )
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+# --- Older Code Version (for reference) ---
+# If using an older version of the Supabase client that requires .execute(),
+# you could call the RPC function like this:
+#
+# response_old = supabase.rpc("get_monthly_attendance_counts", params={}).execute()
+# print("Older method response:")
+# if response_old.data:
+#     for row in response_old.data:
+#         print(row)
+# else:
+#     print("No data returned.")
+#
+# And then use `response_old.data` when building your Excel file.
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 5000))  # Default to 5000 if no PORT is provided
