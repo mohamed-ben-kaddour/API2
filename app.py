@@ -18,7 +18,7 @@ def download_excel():
         # Call the stored procedure using RPC
 
 
-        data = supabase.rpc('get_monthly_attendance_counts').execute()
+        data = supabase.rpc("get_monthly_attendance_counts", params={}).execute()
 
         # Create an in-memory Excel file using openpyxl
         wb = openpyxl.Workbook()
