@@ -16,7 +16,7 @@ supabase: Client = create_client(url, key)
 def download_excel():
     try:
         # Call the stored procedure using RPC
-        response = supabase.rpc("get_monthly_attendance_counts", params={})
+        response = supabase.rpc("hello_world", params={})
         print("Current method response:")
         if response.data:
             for row in response.data:
