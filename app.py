@@ -15,16 +15,26 @@ supabase: Client = create_client(url, key)
 @app.route('/download_excel')
 def download_excel():
     try:
-        # Call the stored procedure (make sure it exists in Supabase)
-        response = supabase.rpc('get_monthly_attendance', {}).execute()
+        # Execute SQL query directly instead of calling stored procedure
+        query = """
+        SELECT 
+            a.name AS activity_name,
+            aa.idactivity AS activity_id,
+            TO_CHAR(aa.timestamp, 'YYYY-MM') AS year_month,
+            aa.sexe,
+            SUM(aa.nbr) AS total_attendance
+        FROM public.attendanceactivities aa
+        JOIN public.activity a ON aa.idactivity = a.id
+        GROUP BY a.name, aa.idactivity, year_month, aa.sexe
+        ORDER BY year_month DESC, a.name, aa.sexe;
+        """
         
-        if 'data' not in response:
-            return jsonify({"error": "Invalid response format from Supabase"}), 500
+        response = supabase.table("attendanceactivities").execute_sql(query)
         
-        data = response['data']
-        
-        if not data:
+        if not response.data:
             return jsonify({"error": "No data found"}), 404
+
+        data = response.data
 
         # Create an in-memory Excel file using openpyxl
         wb = openpyxl.Workbook()
