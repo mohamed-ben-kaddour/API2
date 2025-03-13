@@ -16,12 +16,9 @@ supabase: Client = create_client(url, key)
 def download_excel():
     try:
         # Call the stored procedure using RPC
-        response = supabase.rpc('get_monthly_attendance').execute()
-        
-        if not response.data:
-            return jsonify({"error": "No data found"}), 404
 
-        data = response.data
+
+        data = supabase.rpc('get_monthly_attendance_counts').execute()
 
         # Create an in-memory Excel file using openpyxl
         wb = openpyxl.Workbook()
