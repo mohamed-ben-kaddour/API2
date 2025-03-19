@@ -15,7 +15,7 @@ supabase: Client = create_client(url, key)
 @app.route('/download_excel')
 def download_excel():
     try:
-        response = supabase.functions.invoke("hello-world", invoke_options={'body':{}})
+        response = ( supabase.rpc("hello_world", get=True) .execute() )
         print(response)
         if response.data:
             for row in response.data:
