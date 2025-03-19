@@ -29,10 +29,10 @@ def download_excel():
         # Create an in-memory Excel file using openpyxl
         wb = openpyxl.Workbook()
         ws = wb.active
-        ws.title = "Rapport Présences Activité"
+        ws.title = "Monthly Attendance"
 
         # Add column headers with formatting
-        headers = ["Activité", "Mois", "Nombre de garçons", "Nombre de filles"]
+        headers = ["Activity ID", "Month", "Male Count", "Female Count"]
         for col_num, header in enumerate(headers, 1):
             cell = ws.cell(row=1, column=col_num, value=header)
             cell.font = Font(bold=True, size=14, color="FFFFFF")
@@ -40,16 +40,13 @@ def download_excel():
             cell.alignment = Alignment(horizontal="center", vertical="center")  # Center headers
 
         # Add data rows
+        row_num = 2  # Start from the second row
         for row in data:
-            row_data = [
-                row.get("activity_id", "N/A"),
-                row.get("month", "N/A"),
-                row.get("male_count", "N/A"),
-                row.get("female_count", "N/A")
-            ]
-            for col_num, value in enumerate(row_data, 1):
-                cell = ws.cell(row=ws.max_row + 1, column=col_num, value=value)
-                cell.alignment = Alignment(horizontal="center", vertical="center")  # Center data cells
+            ws.cell(row=row_num, column=1, value=row.get("activity_id", "N/A")).alignment = Alignment(horizontal="center", vertical="center")
+            ws.cell(row=row_num, column=2, value=row.get("month", "N/A")).alignment = Alignment(horizontal="center", vertical="center")
+            ws.cell(row=row_num, column=3, value=row.get("male_count", "N/A")).alignment = Alignment(horizontal="center", vertical="center")
+            ws.cell(row=row_num, column=4, value=row.get("female_count", "N/A")).alignment = Alignment(horizontal="center", vertical="center")
+            row_num += 1  # Move to the next row
 
         # Auto-adjust column widths
         for col in ws.columns:
