@@ -1,6 +1,6 @@
 from flask import Flask, send_file, jsonify
 import openpyxl
-from openpyxl.styles import Font, PatternFill
+from openpyxl.styles import Font, PatternFill, Alignment
 import io
 from supabase import create_client, Client
 import os
@@ -29,23 +29,27 @@ def download_excel():
         # Create an in-memory Excel file using openpyxl
         wb = openpyxl.Workbook()
         ws = wb.active
-        ws.title = "Monthly Attendance"
+        ws.title = "Rapport Présences Activité"
 
         # Add column headers with formatting
-        headers = ["Activity ID", "Month", "Male Count", "Female Count"]
+        headers = ["Activité", "Mois", "Nombre de garçons", "Nombre de filles"]
         for col_num, header in enumerate(headers, 1):
             cell = ws.cell(row=1, column=col_num, value=header)
             cell.font = Font(bold=True, size=14, color="FFFFFF")
             cell.fill = PatternFill(start_color="4F81BD", end_color="4F81BD", fill_type="solid")
+            cell.alignment = Alignment(horizontal="center", vertical="center")  # Center headers
 
         # Add data rows
         for row in data:
-            ws.append([
-                row.get("Activité, "N/A"),
-                row.get("Mois", "N/A"),
-                row.get("Nombre de garçons", "N/A"),
-                row.get("Nombre de filles", "N/A")
-            ])
+            row_data = [
+                row.get("activity_id", "N/A"),
+                row.get("month", "N/A"),
+                row.get("male_count", "N/A"),
+                row.get("female_count", "N/A")
+            ]
+            for col_num, value in enumerate(row_data, 1):
+                cell = ws.cell(row=ws.max_row + 1, column=col_num, value=value)
+                cell.alignment = Alignment(horizontal="center", vertical="center")  # Center data cells
 
         # Auto-adjust column widths
         for col in ws.columns:
