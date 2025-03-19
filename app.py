@@ -15,9 +15,8 @@ supabase: Client = create_client(url, key)
 @app.route('/download_excel')
 def download_excel():
     try:
-        # Call the stored procedure using RPC
-        response = supabase.functions.invoke("hello-world", invoke_options={'body':{}})        
-        print("Current method response:")
+        response = supabase.functions.invoke("hello-world", invoke_options={'body':{}})
+        print(response)
         if response.data:
             for row in response.data:
                 print(row)
