@@ -1,5 +1,6 @@
 from flask import Flask, send_file, jsonify
 import openpyxl
+from openpyxl.styles import Font, PatternFill
 import io
 from supabase import create_client, Client
 import os
@@ -15,7 +16,7 @@ supabase: Client = create_client(url, key)
 @app.route('/download_excel')
 def download_excel():
     try:
-        response = ( supabase.rpc("get_monthly_attendance_counts").execute() )
+        response = supabase.rpc("get_monthly_attendance_counts").execute()
         print(response)
         if response.data:
             for row in response.data:
@@ -23,7 +24,6 @@ def download_excel():
         else:
             print("No data returned.")
         
-        # Use the data from the response
         data = response.data
 
         # Create an in-memory Excel file using openpyxl
@@ -31,48 +31,42 @@ def download_excel():
         ws = wb.active
         ws.title = "Monthly Attendance"
 
-        # Add column headers
+        # Add column headers with formatting
         headers = ["Activity ID", "Month", "Male Count", "Female Count"]
-        ws.append(headers)
+        for col_num, header in enumerate(headers, 1):
+            cell = ws.cell(row=1, column=col_num, value=header)
+            cell.font = Font(bold=True, size=14, color="FFFFFF")
+            cell.fill = PatternFill(start_color="4F81BD", end_color="4F81BD", fill_type="solid")
 
         # Add data rows
         for row in data:
             ws.append([
-                row.get("activity_id", "N/A"),
-                row.get("month", "N/A"),
-                row.get("male_count", "N/A"),
-                row.get("female_count", "N/A")
+                row.get("Activité, "N/A"),
+                row.get("Mois", "N/A"),
+                row.get("Nombre de garçons", "N/A"),
+                row.get("Nombre de filles", "N/A")
             ])
+
+        # Auto-adjust column widths
+        for col in ws.columns:
+            max_length = max(len(str(cell.value)) if cell.value else 0 for cell in col)
+            adjusted_width = max_length + 2
+            ws.column_dimensions[col[0].column_letter].width = adjusted_width
 
         # Save to an in-memory file
         excel_file = io.BytesIO()
         wb.save(excel_file)
         excel_file.seek(0)
 
-        # Send the file as a response
         return send_file(
             excel_file,
             as_attachment=True,
-            download_name='attendance_data.xlsx',
+            download_name='rapport_presences_activite.xlsx',
             mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         )
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# --- Older Code Version (for reference) ---
-# If using an older version of the Supabase client that requires .execute(),
-# you could call the RPC function like this:
-#
-# response_old = supabase.rpc("get_monthly_attendance_counts", params={}).execute()
-# print("Older method response:")
-# if response_old.data:
-#     for row in response_old.data:
-#         print(row)
-# else:
-#     print("No data returned.")
-#
-# And then use `response_old.data` when building your Excel file.
-
 if __name__ == "__main__":
-    port = int(os.getenv("PORT", 5000))  # Default to 5000 if no PORT is provided
+    port = int(os.getenv("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
