@@ -1,6 +1,6 @@
-# API2
+# MDJ API
 
-API2 is a Python-based API application that generates a downloadable Excel report with monthly attendance data. The application integrates with Supabase to retrieve data and uses Flask as the web framework along with openpyxl for Excel file creation. It is ready for deployment on platforms like Heroku.
+MDJ API is a Python-based API application that generates a downloadable Excel report with monthly attendance data. The application integrates with Supabase to retrieve data and uses Flask as the web framework along with openpyxl for Excel file creation. It is ready for deployment on platforms like Heroku.
 
 ## Table of Contents
 
